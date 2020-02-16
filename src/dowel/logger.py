@@ -134,6 +134,7 @@ foo  bar
 import abc
 import contextlib
 import warnings
+import time
 
 from dowel.utils import colorize
 
@@ -185,8 +186,22 @@ class Logger:
         self._prefix_str = ''
         self._warned_once = set()
         self._disable_warnings = False
+        self._print_time = False
 
-    def log(self, data):
+    def set_timer(self, print_time): 
+        self._print_time = print_time
+
+    def start_timer(self): 
+        if (self._print_time):
+            self._timer = time.time()
+
+    def stop_timer(self, message):
+        if (self._print_time):
+            self._timer = time.time() - self._timer
+            message += " (Done in {}s)".format(self._timer)
+            self.log(message)
+
+    def log(self, data, print_time=False):
         """Magic method that takes in all different types of input.
 
         This method is the main API for the logger. Any data to be logged goes
